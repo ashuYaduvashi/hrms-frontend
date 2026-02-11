@@ -1,0 +1,25 @@
+
+.sidebar {
+  width: 260px;
+  background-color: #1e1e2f;
+  color: white;
+  padding-top: 16px;
+}
+
+.item {
+  display: block;
+  padding: 14px 18px;
+  color: #cfcfcf;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.item:hover {
+  background-color: #2e2e44;
+  color: white;
+}
+
+
+.subMenu {
+  padding-left: 18px;
+}
