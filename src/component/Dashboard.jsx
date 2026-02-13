@@ -1,6 +1,6 @@
 import styles from "./Dashboard.module.css";
 
-const Dashboard = ({ divContent }) => {
+const Dashboard = ({ divContent = [] }) => {
   return (
     <div className={styles.dashboard}>
       {divContent.map((item) => (
