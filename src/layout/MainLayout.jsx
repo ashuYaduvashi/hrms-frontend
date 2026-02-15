@@ -1,21 +1,21 @@
 
+import { Outlet } from "react-router-dom";
+import '../App.css';
 import Header from '../component/Header';
 import SideBar from '../component/Sidebar';
-import { Outlet } from "react-router-dom";
-import '../App.css'
 
 import {
-  FaUserCog,
-  FaUsers,
-  FaFileAlt,
+  FaBook,
+  FaBuilding,
+  FaClipboardCheck,
   FaCommentDots,
   FaComments,
-  FaBuilding,
-  FaBook,
+  FaFileAlt,
   FaLink,
   FaPhotoVideo,
-  FaClipboardCheck,
   FaSignOutAlt,
+  FaUserCog,
+  FaUsers,
 } from "react-icons/fa";
 
 export const DivContent = [
@@ -90,11 +90,18 @@ export const SIDEBAR_LINKS = [
     id: 2,
     label: "Profile",
     path: "/dashboard/profile",
-    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_EMPLOYEE"]
+    roles: ["ROLE_EMPLOYEE"]
+  },
+
+    {
+    id: 3,
+    label: "Update Profile",
+    path: "/dashboard/upProfile",
+    roles: ["ROLE_EMPLOYEE"]
   },
 
   {
-    id: 3,
+    id: 4,
     label: "Employees",
     roles: ["ROLE_ADMIN", "ROLE_MANAGER"],
     children: [
@@ -102,17 +109,17 @@ export const SIDEBAR_LINKS = [
         id: 31,
         label: "Employee List",
         path: "/dashboard/employees"
-      },
-      {
-        id: 32,
-        label: "Search Employee",
-        path: "/dashboard/employees/search"
       }
+      // {
+      //   id: 32,
+      //   label: "Search Employee",
+      //   path: "/dashboard/employees/search"
+      // }
     ]
   },
 
   {
-    id: 4,
+    id: 5,
     label: "Projects",
     roles: ["ROLE_ADMIN", "ROLE_MANAGER"],
     children: [
@@ -134,31 +141,59 @@ export const SIDEBAR_LINKS = [
     ]
   },
 
+  // {
+  //   id: 6,
+  //   label: "Leave",
+  //   roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_EMPLOYEE"],
+  //   children: [
+  //     {
+  //       id: 51,
+  //       label: "Apply Leave",
+  //       path: "/dashboard/leave/apply"
+  //     },
+  //     {
+  //       id: 52,
+  //       label: "Approve / Reject",
+  //       path: "/dashboard/leave/approval"
+  //     }
+  //   ]
+  // },
+
   {
-    id: 5,
-    label: "Leave",
-    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_EMPLOYEE"],
-    children: [
-      {
-        id: 51,
-        label: "Apply Leave",
-        path: "/dashboard/leave/apply"
-      },
-      {
-        id: 52,
-        label: "Approve / Reject",
-        path: "/dashboard/leave/approval"
-      }
-    ]
+  id: 6,
+  label: "Leave",
+  roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_EMPLOYEE"],
+
+  children: [
+    {
+      id: 51,
+      label: "Apply Leave",
+      path: "/dashboard/leave/apply",
+      roles: ["ROLE_EMPLOYEE"]   
+    },
+    {
+      id: 52,
+      label: "Approve / Reject",
+      path: "/dashboard/leave/approval",
+      roles: ["ROLE_ADMIN"]     
+    }
+  ]
+},
+
+
+  {
+    id: 7,
+    label: "Add Technology",
+    path: "/dashboard/addTechnologyAdmin",
+    roles: ["ROLE_ADMIN"]
   },
 
-  {
-    id: 6,
-    label: "Departments",
-    path: "/dashboard/departments",
-    roles: ["ROLE_ADMIN"]
+   {
+    id: 7,
+    label: "My Project",
+    path: "/dashboard/myProject",
+    roles: ["ROLE_EMPLOYEE"]
   }
-
 ];
 
 
@@ -194,11 +229,14 @@ export const SIDEBAR_LINKS = [
 
 const MainLayout = () => {
 
+  // I used this filter when Leave's children does not contain any role 
   const role = localStorage.getItem("role");
 
   const filteredLinks = SIDEBAR_LINKS.filter(menu =>
     menu.roles.includes(role)
   );
+
+
 
   return (
     <div className="app">

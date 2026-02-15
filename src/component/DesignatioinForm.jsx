@@ -32,7 +32,7 @@ const DesignationForm = () => {
 
     } catch (error) {
       console.error(error);
-      alert("Error creating designation ❌");
+      alert("Error creating designation ");
     }
   };
 

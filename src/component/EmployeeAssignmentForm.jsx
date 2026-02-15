@@ -3,7 +3,7 @@ import axios from "axios";
 
 const EmployeeAssignmentForm = () => {
 
-  const API_URL = "http://localhost:8080/api/assignments";
+  const API_URL = "http://localhost:8080/assignments";
 
   const [assignment, setAssignment] = useState({
     employee: { id: "" },

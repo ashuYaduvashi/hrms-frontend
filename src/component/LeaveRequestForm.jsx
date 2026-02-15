@@ -4,7 +4,7 @@ import axios from "axios";
 const LeaveRequestForm = () => {
 
 
-  const API_URL = "http://localhost:8080/api/leaves";
+  const API_URL = "http://localhost:8080/leaves";
 
   const [leave, setLeave] = useState({
     employee: {

@@ -54,25 +54,33 @@
 
 
 import { Route, Routes } from "react-router-dom";
-import MainLayout from "../layout/MainLayout";
-import Home from "../component/Home";
-import Login from "../component/Login";
-import Register from "../component/Register";
 import Dashboard from "../component/Dashboard";
 import EmployeeForm from "../component/EmployeeForm";
+import EmployeeList from "../component/EmployeeList";
+// import EmployeeSearch from "../component/EmployeeSearch";
+import Home from "../component/Home";
+import LeaveApply from "../component/LeaveApply";
+import LeaveApproval from "../component/LeaveApproval";
+import Login from "../component/Login";
+import ModuleForm from "../component/ModuleForm";
+import MyProjectDetails from "../component/MyProjectDetails";
+import Profile from "../component/Profile";
+import ProjectForm from "../component/ProjectForm";
+import ProjectList from "../component/ProjectList";
+import Register from "../component/Register";
+import MainLayout from "../layout/MainLayout";
 import ProtectedRoute from "../route/ProtectedRoute";
+import AddTechnologyAdmin from "../component/AddTechnologyAdmin";
+// const EmployeeList = () => <h2>Employee List</h2>;
+// const EmployeeSearch = () => <h2>Search Employee</h2>;
 
 
-const EmployeeList = () => <h2>Employee List</h2>;
-const EmployeeSearch = () => <h2>Search Employee</h2>;
+// const ProjectList = () => <h2>Project List</h2>;
+// const ProjectForm = () => <h2>Create Project</h2>;
+// const ModuleDetails = () => <h2>Module Details</h2>;
 
-
-const ProjectList = () => <h2>Project List</h2>;
-const ProjectForm = () => <h2>Create Project</h2>;
-const ModuleDetails = () => <h2>Module Details</h2>;
-
-const LeaveApply = () => <h2>Apply Leave</h2>;
-const LeaveApproval = () => <h2>Leave Approval</h2>;
+// const LeaveApply = () => <h2>Apply Leave</h2>;
+// const LeaveApproval = () => <h2>Leave Approval</h2>;
 
 
 const DepartmentList = () => <h2>Department List</h2>;
@@ -98,8 +106,19 @@ const AppRoutes = () => {
         <Route index element={<Dashboard />} />
 
         
-        <Route path="profile" element={<EmployeeForm />} />
+        <Route path="profile" 
+        element={
+          <ProtectedRoute allowedRoles={["ROLE_EMPLOYEE"]}>
+            <Profile />
+          </ProtectedRoute>
+        } />
 
+        <Route path="upProfile"
+         element={
+        <ProtectedRoute allowedRoles={["ROLE_EMPLOYEE"]}>
+           <EmployeeForm />
+        </ProtectedRoute>
+         }/>
        
         <Route
           path="employees"
@@ -110,20 +129,20 @@ const AppRoutes = () => {
           }
         />
 
-        <Route
+        {/* <Route
           path="employees/search"
           element={
-            <ProtectedRoute allowedRoles={["ROLE_ADMIN", "ROLE_MANAGER"]}>
+            <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
               <EmployeeSearch />
             </ProtectedRoute>
           }
-        />
+        /> */}
 
        
         <Route
           path="projects"
           element={
-            <ProtectedRoute allowedRoles={["ROLE_ADMIN", "ROLE_MANAGER"]}>
+            <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
               <ProjectList />
             </ProtectedRoute>
           }
@@ -141,8 +160,8 @@ const AppRoutes = () => {
         <Route
           path="projects/modules"
           element={
-            <ProtectedRoute allowedRoles={["ROLE_ADMIN", "ROLE_MANAGER"]}>
-              <ModuleDetails />
+            <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
+              <ModuleForm />
             </ProtectedRoute>
           }
         />
@@ -158,9 +177,18 @@ const AppRoutes = () => {
         />
 
         <Route
+          path="myProject"
+          element={
+            <ProtectedRoute allowedRoles={["ROLE_EMPLOYEE"]}>
+              <MyProjectDetails />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="leave/approval"
           element={
-            <ProtectedRoute allowedRoles={["ROLE_ADMIN", "ROLE_MANAGER"]}>
+            <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
               <LeaveApproval />
             </ProtectedRoute>
           }
@@ -168,10 +196,10 @@ const AppRoutes = () => {
 
        
         <Route
-          path="departments"
+          path="addTechnologyAdmin"
           element={
             <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
-              <DepartmentList />
+              <AddTechnologyAdmin />
             </ProtectedRoute>
           }
         />

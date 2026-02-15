@@ -1,14 +1,47 @@
-import styles from "./Dashboard.module.css";
+import React, { useEffect, useState } from "react";
+import "./Dashboard.css";
 
-const Dashboard = ({ divContent = [] }) => {
+const Dashboard = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const name =
+    user?.name ||
+    user?.username ||
+    user?.email?.split("@")[0] ||
+    "User";
+
+  const role = user?.role || "Employee";
+
+  const [animate, setAnimate] = useState(false);
+
+  useEffect(() => {
+    setAnimate(true);
+  }, []);
+
   return (
-    <div className={styles.dashboard}>
-      {divContent.map((item) => (
-        <div className={styles.card} key={item.id}>
-          <div className={styles.cardIcon}>{item.icon}</div>
-          <h3 className={styles.cardTitle}>{item.title}</h3>
+    <div className="dashboard-container">
+      <div className={`dashboard-card ${animate ? "show" : ""}`}>
+        <div className="text-section">
+          <h1 className="welcome-text">
+            Hello, <span>{name}</span> 👋
+          </h1>
+
+          <p className="role-text">
+            Logged in as <strong>{role.replace("ROLE_", "")}</strong>
+          </p>
+
+          <p className="sub-text">
+            Welcome to your HRMS Dashboard. Manage your work efficiently.
+          </p>
         </div>
-      ))}
+
+        <div className="image-section">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+            alt="dashboard"
+          />
+        </div>
+      </div>
     </div>
   );
 };

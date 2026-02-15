@@ -1,163 +1,78 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useState } from "react";
 
 const ModuleForm = () => {
-
-  const [employees, setEmployees] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [modules, setModules] = useState([]);
-
-  const [formData, setFormData] = useState({
-    employeeId: "",
+  const [module, setModule] = useState({
+    moduleName: "",
+    description: "",
     projectId: "",
-    moduleId: "",
-    assignedDate: "",
-    hoursWorked: "",
-    projectStatus: "ACTIVE"
   });
 
- 
-  useEffect(() => {
-    fetchEmployees();
-    fetchProjects();
-    fetchModules();
-  }, []);
-
-  const fetchEmployees = async () => {
-    const res = await axios.get("http://localhost:8080/api/employees");
-    setEmployees(res.data);
-  };
-
-  const fetchProjects = async () => {
-    const res = await axios.get("http://localhost:8080/api/projects");
-    setProjects(res.data);
-  };
-
-  const fetchModules = async () => {
-    const res = await axios.get("http://localhost:8080/api/modules");
-    setModules(res.data);
-  };
-
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
+    setModule({
+      ...module,
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const payload = {
-      employee: { id: formData.employeeId },
-      project: { projectId: formData.projectId },
-      modules: { id: formData.moduleId },
-      assignedDate: formData.assignedDate,
-      hoursWorked: formData.hoursWorked,
-      projectStatus: formData.projectStatus
-    };
-
     try {
-      await axios.post("http://localhost:8080/api/assignments", payload);
-      alert("Assignment Created Successfully ");
+      await axios.post("http://localhost:8080/modules", module);
+      alert("Module Created Successfully");
+      setModule({
+        moduleName: "",
+        description: "",
+        projectId: "",
+      });
     } catch (error) {
       console.error(error);
-      alert("Error creating assignment ");
+      alert("Error creating module");
     }
   };
 
   return (
-    <div className="p-6 max-w-xl mx-auto bg-white shadow rounded">
-      <h2 className="text-xl font-bold mb-4">Assign Employee to Project</h2>
+    <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-md">
+      <h2 className="text-2xl font-bold mb-6 text-green-600">
+        Create Module
+      </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-
-       
-        <select
-          name="employeeId"
-          value={formData.employeeId}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        >
-          <option value="">Select Employee</option>
-          {employees.map(emp => (
-            <option key={emp.id} value={emp.id}>
-              {emp.firstName} {emp.lastName}
-            </option>
-          ))}
-        </select>
-
-        <select
-          name="projectId"
-          value={formData.projectId}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        >
-          <option value="">Select Project</option>
-          {projects.map(pro => (
-            <option key={pro.projectId} value={pro.projectId}>
-              {pro.projectName}
-            </option>
-          ))}
-        </select>
-
-      
-        <select
-          name="moduleId"
-          value={formData.moduleId}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        >
-          <option value="">Select Module</option>
-          {modules.map(mod => (
-            <option key={mod.id} value={mod.id}>
-              {mod.name}
-            </option>
-          ))}
-        </select>
-
-     
         <input
-          type="date"
-          name="assignedDate"
-          value={formData.assignedDate}
+          type="text"
+          name="moduleName"
+          placeholder="Module Name"
+          value={module.moduleName}
           onChange={handleChange}
           className="w-full border p-2 rounded"
           required
         />
 
-      
+        <textarea
+          name="description"
+          placeholder="Module Description"
+          value={module.description}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+        />
+
         <input
           type="number"
-          name="hoursWorked"
-          placeholder="Hours Worked"
-          value={formData.hoursWorked}
+          name="projectId"
+          placeholder="Project ID"
+          value={module.projectId}
           onChange={handleChange}
           className="w-full border p-2 rounded"
+          required
         />
-
-       
-        <select
-          name="projectStatus"
-          value={formData.projectStatus}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-        >
-          <option value="ACTIVE">ACTIVE</option>
-          <option value="COMPLETED">COMPLETED</option>
-          <option value="ON_HOLD">ON_HOLD</option>
-        </select>
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
         >
-          Assign
+          Create Module
         </button>
-
       </form>
     </div>
   );

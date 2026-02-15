@@ -1,0 +1,71 @@
+.dashboard-container {
+  height: 100%;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #eef2ff, #f8fafc);
+}
+
+.dashboard-card {
+  width: 80%;
+  max-width: 1000px;
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s ease;
+}
+
+.dashboard-card.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.text-section {
+  flex: 1;
+}
+
+.welcome-text {
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.welcome-text span {
+  color: #2563eb;
+}
+
+.role-text {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.sub-text {
+  font-size: 16px;
+  color: #777;
+}
+
+.image-section img {
+  width: 280px;
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Floating animation */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
