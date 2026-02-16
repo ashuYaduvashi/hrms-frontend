@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api/api";  
 
 const ProjectForm = () => {
   const [project, setProject] = useState({
@@ -20,7 +20,7 @@ const ProjectForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/projects", project);
+      await api.post("/projects", project);  
       alert("Project Created Successfully");
       setProject({
         projectName: "",
@@ -30,8 +30,12 @@ const ProjectForm = () => {
         status: "",
       });
     } catch (error) {
-      console.error(error);
-      alert("Error creating project");
+      console.error("Error creating project:", error);
+      if (error.response?.status === 403) {
+        alert("Access Denied: You don't have permission to create projects");
+      } else {
+        alert("Error creating project");
+      }
     }
   };
 
@@ -40,7 +44,6 @@ const ProjectForm = () => {
       <h2 className="text-2xl font-bold mb-6 text-blue-600">
         Create Project
       </h2>
-
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -51,7 +54,6 @@ const ProjectForm = () => {
           className="w-full border p-2 rounded"
           required
         />
-
         <textarea
           name="description"
           placeholder="Project Description"
@@ -60,7 +62,6 @@ const ProjectForm = () => {
           className="w-full border p-2 rounded"
           required
         />
-
         <input
           type="date"
           name="startDate"
@@ -69,7 +70,6 @@ const ProjectForm = () => {
           className="w-full border p-2 rounded"
           required
         />
-
         <input
           type="date"
           name="endDate"
@@ -77,7 +77,6 @@ const ProjectForm = () => {
           onChange={handleChange}
           className="w-full border p-2 rounded"
         />
-
         <select
           name="status"
           value={project.status}
@@ -90,7 +89,6 @@ const ProjectForm = () => {
           <option value="COMPLETED">Completed</option>
           <option value="ON_HOLD">On Hold</option>
         </select>
-
         <button
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"

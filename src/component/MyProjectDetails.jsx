@@ -11,7 +11,7 @@ const MyProjectDetails = () => {
 
   const fetchProjectDetails = async () => {
     try {
-      const res = await api.get("/employees"); 
+      const res = await api.get("/employee"); 
       setData(res.data);
     } catch (error) {
       console.error("Error fetching project details", error);
