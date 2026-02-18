@@ -12,32 +12,91 @@ const Register = () => {
     password: ""
   });
 
+  const [errors, setErrors] = useState({});
+  const [generalError, setGeneralError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+
   const handleChange = (e) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
+
+   
+    setErrors(prev => ({
+      ...prev,
+      [e.target.name]: ""
+    }));
+
+    setGeneralError("");
+  };
+
+  const validate = (values) => {
+    const newErrors = {};
+
+    const nameRegex = /^[A-Za-z .-]+$/;
+    const emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (!values.name) {
+      newErrors.name = "Name is required";
+    } else if (!nameRegex.test(values.name)) {
+      newErrors.name = "Only characters allowed";
+    }
+
+    if (!values.email) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(values.email)) {
+      newErrors.email = "Invalid email format";
+    }
+
+    if (!values.password) {
+      newErrors.password = "Password is required";
+    } else if (!passwordRegex.test(values.password)) {
+      newErrors.password =
+        "Password must contain minimum 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    try {
-      await api.post("/auth/register", form);
+    const isValid = validate(form);
+    if (!isValid) return;
 
-      alert("Registration successful. Please login.");
+   try {
+  await api.post("/auth/register", form);
 
-      navigate("/login");
+  setSuccessMessage("Registration successful! Redirecting to login...");
+  setGeneralError("");
 
-    } catch (error) {
-      alert(error.response?.data?.message || "Registration failed");
-    }
+  setTimeout(() => {
+    navigate("/login");
+  }, 2000);
+
+} catch (error) {
+  setGeneralError(
+    error.response?.data?.message || "Registration failed"
+  );
+}
+
   };
 
   return (
     <div style={styles.container}>
       <form onSubmit={handleRegister} style={styles.form}>
         <h2>Register</h2>
+        {successMessage && (
+           <p style={{ color: "green" }}>{successMessage}</p>
+          )}
+        {generalError && (
+          <p style={{ color: "red" }}>{generalError}</p>
+        )}
 
         <input
           type="text"
@@ -45,9 +104,11 @@ const Register = () => {
           placeholder="Enter Name"
           value={form.name}
           onChange={handleChange}
-          required
           style={styles.input}
         />
+        {errors.name && (
+          <p style={{ color: "red" }}>{errors.name}</p>
+        )}
 
         <input
           type="email"
@@ -55,9 +116,11 @@ const Register = () => {
           placeholder="Enter Email"
           value={form.email}
           onChange={handleChange}
-          required
           style={styles.input}
         />
+        {errors.email && (
+          <p style={{ color: "red" }}>{errors.email}</p>
+        )}
 
         <input
           type="password"
@@ -65,13 +128,16 @@ const Register = () => {
           placeholder="Enter Password"
           value={form.password}
           onChange={handleChange}
-          required
           style={styles.input}
         />
+        {errors.password && (
+          <p style={{ color: "red" }}>{errors.password}</p>
+        )}
 
-        <button type="submit" style={styles.button}>
+       <button type="submit" style={styles.button} disabled={successMessage}>
           Register
-        </button>
+       </button>
+
 
         <p>
           Already have an account?{" "}
@@ -100,7 +166,7 @@ const styles = {
   input: {
     width: "100%",
     padding: "10px",
-    margin: "10px 0",
+    margin: "5px 0",
     borderRadius: "4px",
     border: "1px solid #ccc"
   },

@@ -1,5 +1,6 @@
 
 import { Outlet } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import '../App.css';
 import Header from '../component/Header';
 import SideBar from '../component/Sidebar';
@@ -189,9 +190,16 @@ export const SIDEBAR_LINKS = [
   },
 
    {
-    id: 7,
+    id: 8,
     label: "My Project",
     path: "/dashboard/myProject",
+    roles: ["ROLE_EMPLOYEE"]
+  },
+
+   {
+    id: 9,
+    label: "My Skills",
+    path: "/dashboard/mySkills",
     roles: ["ROLE_EMPLOYEE"]
   }
 ];
@@ -230,7 +238,20 @@ export const SIDEBAR_LINKS = [
 const MainLayout = () => {
 
   // I used this filter when Leave's children does not contain any role 
-  const role = localStorage.getItem("role");
+  
+  const token = localStorage.getItem("token");
+
+  let role = null;
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      role = decoded?.role;
+    } catch (error) {
+      console.error("Invalid token");
+    }
+  }
+
 
   const filteredLinks = SIDEBAR_LINKS.filter(menu =>
     menu.roles.includes(role)
@@ -245,7 +266,7 @@ const MainLayout = () => {
         title="Human Resource And Project Management"
         date="29 Dec 2025"
         time="12:18 PM"
-        options={["Super Admin", "Admin", "User"]}
+        options={["Admin", "User"]}
       />
 
       <div className="bodyLayout">

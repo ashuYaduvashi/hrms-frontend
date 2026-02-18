@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import styles from "./EmployeeForm.module.css";
 import EmployeeService from "../service/EmployeeService";
 
- 
-
-  const emptyAddress = {
+const emptyAddress = {
   addressLine1: "",
   addressLine2: "",
   city: "",
@@ -14,21 +12,21 @@ import EmployeeService from "../service/EmployeeService";
   pincode: ""
 };
 
-const EmployeeForm= () => {
-
+const EmployeeForm = () => {
   const [employee, setEmployee] = useState({
     name: "",
     email: "",
     phoneNumber: "",
     dob: "",
     education: "",
-    hireDate: "",
     sameAsCurrent: false,
     currentAddress: { ...emptyAddress },
     permanentAddress: { ...emptyAddress }
   });
 
-  // ================= FETCH PROFILE =================
+  const [errors, setErrors] = useState({});
+  const [isSuccess, setIsSuccess] = useState(false);
+
   useEffect(() => {
     EmployeeService.getMyProfile()
       .then(res => {
@@ -40,9 +38,6 @@ const EmployeeForm= () => {
           email: data.email || "",
           phoneNumber: data.phoneNumber || "",
           education: data.education || "",
-          hireDate: data.hireDate
-            ? new Date(data.hireDate).toISOString().split("T")[0]
-            : "",
           dob: data.dob
             ? new Date(data.dob).toISOString().split("T")[0]
             : "",
@@ -53,16 +48,11 @@ const EmployeeForm= () => {
       .catch(err => console.log(err));
   }, []);
 
-  // ================= BASIC FIELD CHANGE =================
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEmployee(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setEmployee(prev => ({ ...prev, [name]: value }));
   };
 
-  // ================= ADDRESS CHANGE =================
   const handleAddressChange = (e, type) => {
     const { name, value } = e.target;
 
@@ -75,18 +65,14 @@ const EmployeeForm= () => {
         }
       };
 
-      // 🔥 Auto sync permanent when sameAsCurrent is true
       if (type === "currentAddress" && prev.sameAsCurrent) {
-        updated.permanentAddress = {
-          ...updated.currentAddress
-        };
+        updated.permanentAddress = { ...updated.currentAddress };
       }
 
       return updated;
     });
   };
 
-  // ================= SAME AS TOGGLE =================
   const handleSameAsToggle = (e) => {
     const checked = e.target.checked;
 
@@ -95,16 +81,93 @@ const EmployeeForm= () => {
       sameAsCurrent: checked,
       permanentAddress: checked
         ? { ...prev.currentAddress }
-        : { ...emptyAddress }
+        : { ...emptyAddress } 
     }));
   };
 
-  // ================= SUBMIT =================
+  const validate = (values) => {
+    const newErrors = {};
+
+    const emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    const onlyTextRegex = /^[A-Za-z .-]+$/;
+    const onlyDigitsRegex = /^[0-9]{10}$/;
+    const pincodeRegex = /^[1-9][0-9]{5}$/;
+
+    if (!values.name) newErrors.name = "Name is required";
+    else if (!onlyTextRegex.test(values.name))
+      newErrors.name = "Only characters allowed";
+
+    if (!values.email) newErrors.email = "Email is required";
+    else if (!emailRegex.test(values.email))
+      newErrors.email = "Invalid email format";
+
+    if (!values.phoneNumber)
+      newErrors.phoneNumber = "Phone number required";
+    else if (!onlyDigitsRegex.test(values.phoneNumber))
+      newErrors.phoneNumber = "Phone must be 10 digits";
+
+    if (!values.dob) newErrors.dob = "Date of birth required";
+    else {
+      const birthDate = new Date(values.dob);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      if (age < 18) newErrors.dob = "Age must be 18+";
+    }
+
+    const validateAddress = (address, type) => {
+      const addressErrors = {};
+
+      if (!address.addressLine1)
+        addressErrors.addressLine1 = "Address Line 1 required";
+   
+      if (!address.city)
+        addressErrors.city = "City required";
+       else if (!onlyTextRegex.test(address.city))
+      addressErrors.city = "Only characters allowed";
+
+      if (!address.district)
+        addressErrors.city = "District required";
+       else if (!onlyTextRegex.test(address.district))
+      addressErrors.district = "Only characters allowed";
+
+      if (!address.state)
+        addressErrors.state = "State required";
+       else if (!onlyTextRegex.test(address.state))
+      addressErrors.state = "Only characters allowed";
+
+      if (!address.country)
+        addressErrors.country = "Country required";
+       else if (!onlyTextRegex.test(address.country))
+      addressErrors.country = "Only characters allowed";
+
+      if (!address.pincode)
+        addressErrors.pincode = "Pincode required";
+      else if (!pincodeRegex.test(address.pincode))
+        addressErrors.pincode = "Invalid pincode";
+
+      if (Object.keys(addressErrors).length > 0)
+        newErrors[type] = addressErrors;
+    };
+
+    validateAddress(values.currentAddress, "currentAddress");
+
+    if (!values.sameAsCurrent)
+      validateAddress(values.permanentAddress, "permanentAddress");
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    const isValid = validate(employee);
+    if (!isValid) return;
 
     EmployeeService.updateMyProfile(employee)
-      .then(() => alert("Profile Updated Successfully"))
+      .then(() => {
+        setIsSuccess(true);
+      })
       .catch(err => console.log(err));
   };
 
@@ -113,40 +176,46 @@ const EmployeeForm= () => {
       <div className={styles.profileCard}>
         <h2 className={styles.title}>Employee Profile</h2>
 
+        {isSuccess && (
+          <p style={{ color: "green" }}>
+            Profile updated successfully
+          </p>
+        )}
+
         <form onSubmit={handleSubmit}>
 
-          {/* ================= BASIC INFO ================= */}
+       
           <div className={styles.section}>
             <h3>Basic Information</h3>
 
             <div className={styles.grid}>
-              <Input label="Name" name="name" value={employee.name} onChange={handleChange} />
-              <Input label="Email" name="email" value={employee.email} onChange={handleChange} />
-              <Input label="Phone Number" name="phoneNumber" value={employee.phoneNumber} onChange={handleChange} />
-              <Input type="date" label="Date of Birth" name="dob" value={employee.dob} onChange={handleChange} />
+              <Input label="Name" name="name"  required value={employee.name} onChange={handleChange} error={errors.name} />
+              <Input label="Email" name="email"  required value={employee.email} onChange={handleChange} error={errors.email} />
+              <Input label="Phone Number" name="phoneNumber"  required value={employee.phoneNumber} onChange={handleChange} error={errors.phoneNumber} />
+              <Input type="date" label="Date of Birth" name="dob"  required value={employee.dob} onChange={handleChange} error={errors.dob} />
               <Input label="Education" name="education" value={employee.education} onChange={handleChange} />
-              <Input type="date" label="Hire Date" name="hireDate" value={employee.hireDate} onChange={handleChange} />
             </div>
           </div>
 
-          {/* ================= CURRENT ADDRESS ================= */}
+        
           <div className={styles.section}>
             <h3>Current Address</h3>
-
             <div className={styles.grid}>
               {Object.keys(employee.currentAddress).map(field => (
-                <Input
+                   <Input
                   key={field}
                   label={field}
                   name={field}
-                  value={employee.currentAddress[field]}
-                  onChange={(e) => handleAddressChange(e, "currentAddress")}
+                  required={field !== "addressLine2"}
+                  value={employee.currentAddress[field]}   
+                  onChange={(e) => handleAddressChange(e, "currentAddress")}  
+                  error={errors.currentAddress?.[field]}
                 />
               ))}
             </div>
           </div>
 
-          {/* ================= CHECKBOX ================= */}
+        
           <div className={styles.checkboxWrapper}>
             <label>
               <input
@@ -158,25 +227,24 @@ const EmployeeForm= () => {
             </label>
           </div>
 
-          {/* ================= PERMANENT ADDRESS ================= */}
           <div className={styles.section}>
             <h3>Permanent Address</h3>
-
             <div className={styles.grid}>
               {Object.keys(employee.permanentAddress).map(field => (
                 <Input
                   key={field}
                   label={field}
                   name={field}
+                  required={field !== "addressLine2"}
                   value={employee.permanentAddress[field]}
                   onChange={(e) => handleAddressChange(e, "permanentAddress")}
                   disabled={employee.sameAsCurrent}
+                  error={errors.permanentAddress?.[field]}
                 />
               ))}
             </div>
           </div>
 
-          {/* ================= BUTTON ================= */}
           <div className={styles.buttonWrapper}>
             <button className={styles.saveBtn}>
               Save Changes
@@ -189,13 +257,14 @@ const EmployeeForm= () => {
   );
 };
 
-// ================= REUSABLE INPUT =================
-const Input = ({ label, type = "text", disabled = false, ...props }) => (
+const Input = ({ label, type = "text", disabled = false,  required = false, error, ...props }) => (
   <div className={styles.inputGroup}>
-    <label>{label}</label>
+    <label>{label}
+    {required && <span style={{ color: "red" }}> *</span>}
+    </label>
     <input type={type} disabled={disabled} {...props} />
+    {error && <p style={{ color: "red" }}>{error}</p>}
   </div>
 );
-
 
 export default EmployeeForm;

@@ -71,6 +71,7 @@ import Register from "../component/Register";
 import MainLayout from "../layout/MainLayout";
 import ProtectedRoute from "../route/ProtectedRoute";
 import AddTechnologyAdmin from "../component/AddTechnologyAdmin";
+import MyskillForm from "../component/MySkillForm"
 // const EmployeeList = () => <h2>Employee List</h2>;
 // const EmployeeSearch = () => <h2>Search Employee</h2>;
 
@@ -200,6 +201,15 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
               <AddTechnologyAdmin />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="mySkills"
+          element={
+            <ProtectedRoute>
+              <MyskillForm/>
             </ProtectedRoute>
           }
         />

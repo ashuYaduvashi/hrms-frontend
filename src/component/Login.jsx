@@ -12,57 +12,81 @@ const Login = () => {
     password: ""
   });
 
+  const [error, setError] = useState({});
+
   const handleChange = (e) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
+
+    // clear field error while typing
+    setError(prev => ({
+      ...prev,
+      [e.target.name]: ""
+    }));
   };
 
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
+  const validate = (values) => {
+    const newError = {};
+    const emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
-  //   try {
-  //     const response = await api.post("/auth/login", form);
+    if (!values.email) {
+      newError.email = "Email is required";
+    } else if (!emailRegex.test(values.email)) {
+      newError.email = "Invalid email format";
+    }
 
-  //     const token = response.data.token;
+    if (!values.password) {
+      newError.password = "Password is required";
+    }
 
-  //     localStorage.setItem("token", token);
-
-  //     navigate("/dashboard");
-  //   } catch (error) {
-  //     alert("Invalid email or password");
-  //   }
-  // };
+    setError(newError);
+    return Object.keys(newError).length === 0;
+  };
 
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const response = await api.post("/auth/login", form);
+    const isValid = validate(form);
+    if (!isValid) return;
 
-    const token = response.data.token;
+   try {
+  const response = await api.post("/auth/login", form);
 
-    localStorage.setItem("token", token);
+  const token = response.data?.token;
 
-   
-    const decoded = jwtDecode(token);
-
-    
-    localStorage.setItem("role", decoded.role);
-
-    navigate("/dashboard");
-
-  } catch (error) {
-    alert("Invalid email or password");
+  if (!token) {
+    throw new Error("Token not received");
   }
-};
 
+
+  localStorage.setItem("token", token);
+
+ 
+  const decoded = jwtDecode(token);
+
+  if (!decoded?.role) {
+    console.warn("Role not found in token");
+  }
+
+  navigate("/dashboard");
+
+} catch (err) {
+  console.error("Login error:", err);
+  setError({ general: "Invalid email or password" });
+}
+
+  };
 
   return (
     <div style={styles.container}>
       <form onSubmit={handleLogin} style={styles.form}>
         <h2>Login</h2>
+
+        {error.general && (
+          <p style={{ color: "red" }}>{error.general}</p>
+        )}
 
         <input
           type="email"
@@ -70,9 +94,11 @@ const Login = () => {
           placeholder="Enter Email"
           value={form.email}
           onChange={handleChange}
-          required
           style={styles.input}
         />
+        {error.email && (
+          <p style={{ color: "red" }}>{error.email}</p>
+        )}
 
         <input
           type="password"
@@ -80,9 +106,11 @@ const Login = () => {
           placeholder="Enter Password"
           value={form.password}
           onChange={handleChange}
-          required
           style={styles.input}
         />
+        {error.password && (
+          <p style={{ color: "red" }}>{error.password}</p>
+        )}
 
         <button type="submit" style={styles.button}>
           Login
@@ -115,7 +143,7 @@ const styles = {
   input: {
     width: "100%",
     padding: "10px",
-    margin: "10px 0",
+    margin: "5px 0",
     borderRadius: "4px",
     border: "1px solid #ccc"
   },

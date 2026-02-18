@@ -1,16 +1,54 @@
 import React, { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import "./Dashboard.css";
 
+
+const formatNameFromEmail = (email) => {
+  if (!email) return "User";
+
+ 
+  const raw = email.split("@")[0];
+
+  const noDigits = raw.replace(/[0-9]/g, "");
+
+ 
+  const withSpaces = noDigits.replace(/[_\-.]/g, " ");
+
+
+  const formatted = withSpaces
+    .split(" ")
+    .filter(word => word.trim() !== "")
+    .map(word =>
+      word.charAt(0).toUpperCase() +
+      word.slice(1).toLowerCase()
+    )
+    .join(" ");
+
+  return formatted || "User";
+};
+
+
 const Dashboard = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
+const token = localStorage.getItem("token");
 
-  const name =
-    user?.name ||
-    user?.username ||
-    user?.email?.split("@")[0] ||
-    "User";
+let decoded = null;
 
-  const role = user?.role || "Employee";
+if (token) {
+  try {
+    decoded = jwtDecode(token);
+  } catch (error) {
+    console.error("Invalid token");
+  }
+}
+
+console.log("decoded user data:", decoded);
+
+const name =
+  decoded?.name ||
+  decoded?.username ||
+  formatNameFromEmail(decoded?.sub);
+
+const role = decoded?.role || "Employee";
 
   const [animate, setAnimate] = useState(false);
 

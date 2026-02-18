@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 
 const EmployeeList = () => {
-  const [employees, setEmployees] = useState([]); // ✅ start as empty array
+  const [employees, setEmployees] = useState([]); 
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -15,11 +15,11 @@ const EmployeeList = () => {
         const res = await api.get("/admin/employees");
         console.log("API RESPONSE:", res.data);
 
-        // ✅ Ensure we always get an array
+       
         setEmployees(Array.isArray(res.data) ? res.data : []);
       } catch (error) {
         console.error("Error fetching employees", error);
-        setEmployees([]); // fallback to empty array
+        setEmployees([]); 
       } finally {
         setLoading(false);
       }
@@ -28,7 +28,6 @@ const EmployeeList = () => {
     fetchEmployees();
   }, []);
 
-  // ✅ Defensive filter: only filter if employees is an array
   const filteredEmployees = Array.isArray(employees)
     ? employees.filter((emp) => {
         const lowerSearch = search.toLowerCase();
