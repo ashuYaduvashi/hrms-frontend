@@ -36,7 +36,7 @@ const Register = () => {
     const newErrors = {};
 
     const nameRegex = /^[A-Za-z .-]+$/;
-    const emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    const emailRegex = /^[A-Za-z+_.-][A-Za-z0-9+_.-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 

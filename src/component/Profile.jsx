@@ -1,8 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import styles from "./Profile.module.css";
 
-const EmployeeProfile = () => {
+const Profile = () => {
   const [employee, setEmployee] = useState(null);
+ 
 
   useEffect(() => {
     fetchProfile();
@@ -19,21 +21,25 @@ const EmployeeProfile = () => {
         }
       );
       setEmployee(res.data);
+      console.log("Emp",res.data);
+      
     } catch (error) {
       console.error(error);
     }
   };
 
-  if (!employee) return <div className="p-6">Loading...</div>;
+  
+
+  if (!employee) return <div className={styles.loading}>Loading...</div>;
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-gray-100 min-h-screen">
+    <div className={styles.container}>
 
-      {/* ================= BASIC DETAILS ================= */}
-      <div className="bg-white p-6 rounded-2xl shadow mb-6">
-        <h2 className="text-2xl font-bold mb-4">Employee Profile</h2>
+     
+      <div className={styles.card}>
+        <h2 className={styles.title}>Employee Profile</h2>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className={styles.grid}>
           <p><strong>Name:</strong> {employee.name}</p>
           <p><strong>Email:</strong> {employee.email}</p>
           <p><strong>Phone:</strong> {employee.phoneNumber}</p>
@@ -44,13 +50,13 @@ const EmployeeProfile = () => {
         </div>
       </div>
 
-      {/* ================= ADDRESS ================= */}
-      <div className="bg-white p-6 rounded-2xl shadow mb-6">
-        <h3 className="text-xl font-semibold mb-4">Address</h3>
+      
+      <div className={styles.card}>
+        <h3 className={styles.subtitle}>Address</h3>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className={styles.grid}>
           <div>
-            <h4 className="font-semibold mb-2">Current Address</h4>
+            <h4>Current Address</h4>
             <p>{employee.currentAddress?.addressLine1}</p>
             <p>{employee.currentAddress?.addressLine2}</p>
             <p>{employee.currentAddress?.city}</p>
@@ -61,7 +67,7 @@ const EmployeeProfile = () => {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">Permanent Address</h4>
+            <h4>Permanent Address</h4>
             <p>{employee.permanentAddress?.addressLine1}</p>
             <p>{employee.permanentAddress?.addressLine2}</p>
             <p>{employee.permanentAddress?.city}</p>
@@ -73,97 +79,106 @@ const EmployeeProfile = () => {
         </div>
       </div>
 
-      {/* ================= TECHNOLOGIES ================= */}
-      <div className="bg-white p-6 rounded-2xl shadow mb-6">
-        <h3 className="text-xl font-semibold mb-4">Technologies</h3>
+      
+      <div className={styles.card}>
+        <h3 className={styles.subtitle}>Technologies</h3>
 
         {employee.technologies?.length === 0 ? (
           <p>No Technologies Added</p>
         ) : (
-          <div className="grid grid-cols-2 gap-4">
+          <div className={styles.techGrid}>
             {employee.technologies.map((tech) => (
-              <div
-                key={tech.id}
-                className="border p-3 rounded-lg bg-gray-50"
-              >
-                <p><strong>{tech.technologyName}</strong></p>
+              <div key={tech.id} className={styles.techCard}>
+                <h4>{tech.technologyName}</h4>
                 <p>Experience: {tech.experienceInMonths} months</p>
                 <p>Proficiency: {tech.proficiency}</p>
+                <p>{tech.usageDescription}</p>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* ================= PROJECTS & MODULES ================= */}
-      <div className="bg-white p-6 rounded-2xl shadow mb-6">
-        <h3 className="text-xl font-semibold mb-4">Assigned Projects</h3>
+    
+      <div className={styles.card}>
+  <h3 className={styles.subtitle}>Assigned Projects</h3>
 
-        {employee.assignments?.length === 0 ? (
-          <p>No Projects Assigned</p>
-        ) : (
-          employee.assignments.map((assignment) => (
-            <div key={assignment.id} className="border p-4 rounded-lg mb-4">
-              <h4 className="text-lg font-bold text-blue-600">
-                {assignment.project?.projectName}
-              </h4>
+  {employee.assignments?.length === 0 ? (
+    <p>No Projects Assigned</p>
+  ) : (
+    employee.assignments.map((assignment) => (
+      <div key={assignment.id} className={styles.projectCard}>
+        <h4 className={styles.projectTitle}>
+          {assignment.project?.projectName}
+        </h4>
 
-              <p className="text-gray-600">
-                Module: {assignment.module?.moduleName}
-              </p>
+        <div className={styles.projectGrid}>
+          <p>
+            <strong>Project ID:</strong>{" "}
+            {assignment.project?.projectId}
+          </p>
 
-              <p>
-                Duration: {assignment.startDate} -{" "}
-                {assignment.endDate || "Ongoing"}
-              </p>
-            </div>
-          ))
-        )}
+          <p>
+            <strong>Module:</strong>{" "}
+            {assignment.module?.name}
+          </p>
+
+          <p>
+            <strong>Assigned Date:</strong>{" "}
+            {assignment.assignedDate}
+          </p>
+
+          <p>
+            <strong>Status:</strong>{" "}
+            <span
+              className={`${styles.status} ${
+                assignment.projectStatus === "ACTIVE"
+                  ? styles.active
+                  : assignment.projectStatus === "COMPLETED"
+                  ? styles.completed
+                  : styles.onhold
+              }`}
+            >
+              {assignment.projectStatus}
+            </span>
+          </p>
+        </div>
       </div>
+    ))
+  )}
+</div>
 
-      {/* ================= LEAVE HISTORY ================= */}
-      <div className="bg-white p-6 rounded-2xl shadow">
-        <h3 className="text-xl font-semibold mb-4">Leave History</h3>
+      <div className={styles.card}>
+        <h3 className={styles.subtitle}>Leave History</h3>
 
         {employee.leaveRequests?.length === 0 ? (
           <p>No Leave Taken</p>
         ) : (
-          <table className="w-full border-collapse">
+          <table className={styles.table}>
             <thead>
-              <tr className="bg-gray-200">
-                <th className="p-2 text-left">From</th>
-                <th className="p-2 text-left">To</th>
-                <th className="p-2 text-left">Reason</th>
-                <th className="p-2 text-left">Status</th>
+              <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Reason</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
               {employee.leaveRequests.map((leave) => (
-                <tr key={leave.id} className="border-b">
-                  <td className="p-2">{leave.startDate}</td>
-                  <td className="p-2">{leave.endDate}</td>
-                  <td className="p-2">{leave.reason}</td>
-                  <td className="p-2">
-                    <span
-                      className={`px-2 py-1 rounded text-white text-sm ${
-                        leave.status === "APPROVED"
-                          ? "bg-green-500"
-                          : leave.status === "REJECTED"
-                          ? "bg-red-500"
-                          : "bg-yellow-500"
-                      }`}
-                    >
-                      {leave.status}
-                    </span>
-                  </td>
+                <tr key={leave.id}>
+                  <td>{leave.startDate}</td>
+                  <td>{leave.endDate}</td>
+                  <td>{leave.reason}</td>
+                  <td>{leave.leaveStatus}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
       </div>
+
     </div>
   );
 };
 
-export default EmployeeProfile;
+export default Profile;

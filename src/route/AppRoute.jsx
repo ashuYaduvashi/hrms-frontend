@@ -57,13 +57,11 @@ import { Route, Routes } from "react-router-dom";
 import Dashboard from "../component/Dashboard";
 import EmployeeForm from "../component/EmployeeForm";
 import EmployeeList from "../component/EmployeeList";
-// import EmployeeSearch from "../component/EmployeeSearch";
 import Home from "../component/Home";
 import LeaveApply from "../component/LeaveApply";
 import LeaveApproval from "../component/LeaveApproval";
 import Login from "../component/Login";
 import ModuleForm from "../component/ModuleForm";
-import MyProjectDetails from "../component/MyProjectDetails";
 import Profile from "../component/Profile";
 import ProjectForm from "../component/ProjectForm";
 import ProjectList from "../component/ProjectList";
@@ -72,6 +70,9 @@ import MainLayout from "../layout/MainLayout";
 import ProtectedRoute from "../route/ProtectedRoute";
 import AddTechnologyAdmin from "../component/AddTechnologyAdmin";
 import MyskillForm from "../component/MySkillForm"
+import AssignProject from "../component/AssignProject";
+import DesignationForm from "../component/DesignationForm";
+import MyProject from "../component/MyProject";
 // const EmployeeList = () => <h2>Employee List</h2>;
 // const EmployeeSearch = () => <h2>Search Employee</h2>;
 
@@ -167,6 +168,15 @@ const AppRoutes = () => {
           }
         />
 
+         <Route
+          path="projects/assignProject"
+          element={
+            <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
+              <AssignProject/>
+            </ProtectedRoute>
+          }
+        />
+
        
         <Route
           path="leave/apply"
@@ -181,7 +191,7 @@ const AppRoutes = () => {
           path="myProject"
           element={
             <ProtectedRoute allowedRoles={["ROLE_EMPLOYEE"]}>
-              <MyProjectDetails />
+              <MyProject />
             </ProtectedRoute>
           }
         />
@@ -201,6 +211,15 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
               <AddTechnologyAdmin />
+            </ProtectedRoute>
+          }
+        />
+
+         <Route
+          path="addDegisnationAdmin"
+          element={
+            <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
+              <DesignationForm/>
             </ProtectedRoute>
           }
         />

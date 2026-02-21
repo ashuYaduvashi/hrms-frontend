@@ -1,108 +1,140 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import api from "../api/api";
+import styles from "./LeaveApply.module.css";
 
-const ApplyLeave = () => {
-  const [formData, setFormData] = useState({
-    leaveType: "",
+const LeaveApply = () => {
+
+  const [leave, setLeave] = useState({
+    leaveType: "CASUAL",
     startDate: "",
     endDate: "",
-    reason: ""
+    daysRequested: 0,
+    reason: "",
   });
 
   const [message, setMessage] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const calculateDays = (start, end) => {
+    if (!start || !end) return 0;
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const diffTime = endDate - startDate;
+    const diffDays = diffTime / (1000 * 60 * 60 * 24) + 1;
+    return diffDays > 0 ? diffDays : 0;
+  };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+
+    if (name === "startDate" || name === "endDate") {
+      const updatedLeave = { ...leave, [name]: value };
+
+      updatedLeave.daysRequested = calculateDays(
+        name === "startDate" ? value : leave.startDate,
+        name === "endDate" ? value : leave.endDate
+      );
+
+      setLeave(updatedLeave);
+    } else {
+      setLeave({ ...leave, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+    setErrorMsg("");
 
     try {
-      const response = await api.post("/leaves/apply", formData);
-      setMessage("Leave applied successfully ");
-      console.log(response.data);
+      await api.post("/leaves/apply", leave); 
+      setMessage("Leave Request Submitted Successfully");
+
+      setLeave({
+        leaveType: "CASUAL",
+        startDate: "",
+        endDate: "",
+        daysRequested: 0,
+        reason: "",
+      });
     } catch (error) {
-      setMessage(error.response?.data?.message || "Error applying leave ");
+      setErrorMsg("Error submitting leave request");
     }
   };
 
   return (
-    <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-xl rounded-xl">
-      <h2 className="text-2xl font-bold mb-6 text-center">Apply for Leave</h2>
+    <div className={styles.formContainer}>
+      <h2 className={styles.heading}>Apply Leave</h2>
 
-      {message && (
-        <div className="mb-4 text-center text-sm text-blue-600">
-          {message}
-        </div>
-      )}
+      {message && <p className={styles.success}>{message}</p>}
+      {errorMsg && <p className={styles.error}>{errorMsg}</p>}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        
-        <div>
-          <label className="block mb-1 font-medium">Leave Type</label>
+      <form onSubmit={handleSubmit} className={styles.form}>
+
+        <div className={styles.formGroup}>
+          <label>Leave Type</label>
           <select
             name="leaveType"
-            value={formData.leaveType}
+            value={leave.leaveType}
             onChange={handleChange}
-            required
-            className="w-full border p-2 rounded-lg"
           >
-            <option value="">Select Leave Type</option>
-            <option value="SICK">SICK</option>
             <option value="CASUAL">CASUAL</option>
-            <option value="ANNUAL">ANNUAL</option>
+            <option value="SICK">SICK</option>
+            <option value="PAID">PAID</option>
+            <option value="UNPAID">UNPAID</option>
           </select>
         </div>
 
-        <div>
-          <label className="block mb-1 font-medium">Start Date</label>
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
+            <label>Start Date</label>
+            <input
+              type="date"
+              name="startDate"
+              value={leave.startDate}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>End Date</label>
+            <input
+              type="date"
+              name="endDate"
+              value={leave.endDate}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
+
+        <div className={styles.formGroup}>
+          <label>Days Requested</label>
           <input
-            type="date"
-            name="startDate"
-            value={formData.startDate}
-            onChange={handleChange}
-            required
-            className="w-full border p-2 rounded-lg"
+            type="number"
+            value={leave.daysRequested}
+            readOnly
+            className={styles.readOnlyField}
           />
         </div>
 
-        <div>
-          <label className="block mb-1 font-medium">End Date</label>
-          <input
-            type="date"
-            name="endDate"
-            value={formData.endDate}
-            onChange={handleChange}
-            required
-            className="w-full border p-2 rounded-lg"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium">Reason</label>
+        <div className={styles.formGroup}>
+          <label>Reason</label>
           <textarea
             name="reason"
-            value={formData.reason}
+            rows="3"
+            value={leave.reason}
             onChange={handleChange}
-            required
-            className="w-full border p-2 rounded-lg"
           />
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Apply Leave
+        <button type="submit" className={styles.button}>
+          Submit Leave
         </button>
       </form>
     </div>
   );
 };
 
-export default ApplyLeave;
+export default LeaveApply;

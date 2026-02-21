@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../api/api";
+import styles from "./MyskillForm.module.css";
 
 const MySkillForm = () => {
 
   const [formData, setFormData] = useState({
-    name: "",
-    technologyType: ""
+    technologyId: "",
+    experienceInMonths: "",
+    proficiency: "",
+    usageDescription: ""
   });
 
+  const [technologies, setTechnologies] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -18,65 +22,106 @@ const MySkillForm = () => {
     });
   };
 
+  useEffect(() => {
+    const fetchTechnologies = async () => {
+      try {
+        const res = await api.get("/technologies");
+        setTechnologies(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchTechnologies();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await api.post("/technologies", formData);
+      await api.post("/employee/empTechnology", formData);
 
-      setMessage("Skill added successfully ✅");
+      setMessage("Skill added successfully");
       setError("");
 
       setFormData({
-        name: "",
-        technologyType: ""
+        technologyId: "",
+        experienceInMonths: "",
+        proficiency: "",
+        usageDescription: ""
       });
 
     } catch (err) {
-      setError("Failed to add skill ❌");
+      setError("Failed to add skill");
       setMessage("");
     }
   };
 
   return (
-    <div className="form-container">
-      <h2>Add Skill</h2>
+    <div className={styles.formContainer}>
+      <h2 className={styles.heading}>Add Skill</h2>
 
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {message && <p className={styles.success}>{message}</p>}
+      {error && <p className={styles.error}>{error}</p>}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className={styles.form}>
 
-        <div>
-          <label>Technology Name *</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            placeholder="Enter technology (e.g., React)"
-          />
-        </div>
-
-        <div>
-          <label>Technology Type *</label>
+        <div className={styles.formGroup}>
+          <label>Technology *</label>
           <select
-            name="technologyType"
-            value={formData.technologyType}
+            name="technologyId"
+            value={formData.technologyId}
             onChange={handleChange}
             required
           >
-            <option value="">-- Select Type --</option>
-            <option value="FRONTEND">Frontend</option>
-            <option value="BACKEND">Backend</option>
-            <option value="DATABASE">Database</option>
-            <option value="DEVOPS">DevOps</option>
-            <option value="OTHER">Other</option>
+            <option value="">Select Technology</option>
+            {technologies.map((tech) => (
+              <option key={tech.id} value={tech.id}>
+                {tech.name}
+              </option>
+            ))}
           </select>
         </div>
 
-        <button type="submit">Add Skill</button>
+        <div className={styles.formGroup}>
+          <label>Experience (Months) *</label>
+          <input
+            type="number"
+            name="experienceInMonths"
+            value={formData.experienceInMonths}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label>Proficiency *</label>
+          <select
+            name="proficiency"
+            value={formData.proficiency}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select</option>
+            <option value="BEGINNER">Beginner</option>
+            <option value="INTERMEDIATE">Intermediate</option>
+            <option value="ADVANCED">Advanced</option>
+            <option value="EXPERT">Expert</option>
+          </select>
+        </div>
+
+        <div className={styles.formGroup}>
+          <label>Usage Description</label>
+          <textarea
+            name="usageDescription"
+            value={formData.usageDescription}
+            onChange={handleChange}
+          />
+        </div>
+
+        <button type="submit" className={styles.button}>
+          Add Skill
+        </button>
 
       </form>
     </div>
@@ -84,5 +129,3 @@ const MySkillForm = () => {
 };
 
 export default MySkillForm;
-
-

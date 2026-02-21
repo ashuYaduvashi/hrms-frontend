@@ -138,6 +138,11 @@ export const SIDEBAR_LINKS = [
         id: 43,
         label: "Modules",
         path: "/dashboard/projects/modules"
+      },
+      {
+        id:76,
+        label: "Assign Project",
+        path: "/dashboard/projects/assignProject"
       }
     ]
   },
@@ -201,7 +206,13 @@ export const SIDEBAR_LINKS = [
     label: "My Skills",
     path: "/dashboard/mySkills",
     roles: ["ROLE_EMPLOYEE"]
-  }
+  },
+   {
+    id: 10,
+    label: "Add Degisnation",
+    path: "/dashboard/addDegisnationAdmin",
+    roles: ["ROLE_ADMIN"]
+  },
 ];
 
 

@@ -1,0 +1,106 @@
+.formContainer {
+  width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9fafb;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.heading {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #15803d;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+}
+
+.required {
+  color: red;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.smallText {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.warningBox {
+  background-color: #fef9c3;
+  border-left: 4px solid #facc15;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #92400e;
+}
+
+.button {
+  padding: 12px;
+  background-color: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  background-color: #15803d;
+  transform: scale(1.02);
+}
+
+.button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loaderContainer {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+}
+
+.messageBox {
+  margin-bottom: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #e6f4ea;
+  color: #2e7d32;
+  font-weight: 500;
+}

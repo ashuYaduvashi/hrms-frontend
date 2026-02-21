@@ -1,5 +1,6 @@
 import { useState } from "react";
-import api from "../api/api";  
+import api from "../api/api";
+import styles from "./ProjectForm.module.css";
 
 const ProjectForm = () => {
   const [project, setProject] = useState({
@@ -10,6 +11,9 @@ const ProjectForm = () => {
     status: "",
   });
 
+  const [message, setMessage] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
   const handleChange = (e) => {
     setProject({
       ...project,
@@ -19,9 +23,13 @@ const ProjectForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setErrorMsg("");
+
     try {
-      await api.post("/projects", project);  
-      alert("Project Created Successfully");
+      await api.post("/projects", project);
+      setMessage("Project Created Successfully");
+
       setProject({
         projectName: "",
         description: "",
@@ -30,69 +38,80 @@ const ProjectForm = () => {
         status: "",
       });
     } catch (error) {
-      console.error("Error creating project:", error);
       if (error.response?.status === 403) {
-        alert("Access Denied: You don't have permission to create projects");
+        setErrorMsg("Access Denied: You don't have permission to create projects");
       } else {
-        alert("Error creating project");
+        setErrorMsg("Error creating project");
       }
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-blue-600">
-        Create Project
-      </h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          name="projectName"
-          placeholder="Project Name"
-          value={project.projectName}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        />
-        <textarea
-          name="description"
-          placeholder="Project Description"
-          value={project.description}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        />
-        <input
-          type="date"
-          name="startDate"
-          value={project.startDate}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        />
-        <input
-          type="date"
-          name="endDate"
-          value={project.endDate}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-        />
-        <select
-          name="status"
-          value={project.status}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        >
-          <option value="">Select Status</option>
-          <option value="ACTIVE">Active</option>
-          <option value="COMPLETED">Completed</option>
-          <option value="ON_HOLD">On Hold</option>
-        </select>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
+    <div className={styles.formContainer}>
+      <h2 className={styles.heading}>Create Project</h2>
+
+      {message && <p className={styles.success}>{message}</p>}
+      {errorMsg && <p className={styles.error}>{errorMsg}</p>}
+
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.formGroup}>
+          <label>Project Name</label>
+          <input
+            type="text"
+            name="projectName"
+            value={project.projectName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label>Description</label>
+          <textarea
+            name="description"
+            value={project.description}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label>Start Date</label>
+          <input
+            type="date"
+            name="startDate"
+            value={project.startDate}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label>End Date</label>
+          <input
+            type="date"
+            name="endDate"
+            value={project.endDate}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label>Status</label>
+          <select
+            name="status"
+            value={project.status}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select Status</option>
+            <option value="ACTIVE">Active</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="ON_HOLD">On Hold</option>
+          </select>
+        </div>
+
+        <button type="submit" className={styles.button}>
           Create Project
         </button>
       </form>

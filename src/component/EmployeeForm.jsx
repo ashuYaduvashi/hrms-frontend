@@ -88,10 +88,11 @@ const EmployeeForm = () => {
   const validate = (values) => {
     const newErrors = {};
 
-    const emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    const emailRegex = /^[A-Za-z+_.-][A-Za-z0-9+_.-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     const onlyTextRegex = /^[A-Za-z .-]+$/;
     const onlyDigitsRegex = /^[0-9]{10}$/;
     const pincodeRegex = /^[1-9][0-9]{5}$/;
+    const phoneRegex=/^[6-9][0-9]{9}$/;
 
     if (!values.name) newErrors.name = "Name is required";
     else if (!onlyTextRegex.test(values.name))
@@ -103,8 +104,8 @@ const EmployeeForm = () => {
 
     if (!values.phoneNumber)
       newErrors.phoneNumber = "Phone number required";
-    else if (!onlyDigitsRegex.test(values.phoneNumber))
-      newErrors.phoneNumber = "Phone must be 10 digits";
+    else if (!phoneRegex.test(values.phoneNumber))
+      newErrors.phoneNumber = "Phone must be 10 digits and started from 6";
 
     if (!values.dob) newErrors.dob = "Date of birth required";
     else {
@@ -191,7 +192,7 @@ const EmployeeForm = () => {
             <div className={styles.grid}>
               <Input label="Name" name="name"  required value={employee.name} onChange={handleChange} error={errors.name} />
               <Input label="Email" name="email"  required value={employee.email} onChange={handleChange} error={errors.email} />
-              <Input label="Phone Number" name="phoneNumber"  required value={employee.phoneNumber} onChange={handleChange} error={errors.phoneNumber} />
+              <Input label="Phone Number" name="phoneNumber" maxLength={10} required value={employee.phoneNumber} onChange={handleChange} error={errors.phoneNumber} />
               <Input type="date" label="Date of Birth" name="dob"  required value={employee.dob} onChange={handleChange} error={errors.dob} />
               <Input label="Education" name="education" value={employee.education} onChange={handleChange} />
             </div>

@@ -9,6 +9,8 @@ const LeaveApproval = () => {
     try {
       const response = await api.get("/leaves"); 
       setLeaves(response.data);
+      console.log(response.data);
+      
     } catch (error) {
       console.error("Error fetching leaves");
     }
@@ -20,7 +22,7 @@ const LeaveApproval = () => {
 
   const approveLeave = async (id) => {
     try {
-      await api.put(`/api/leaves/${id}/approve`);
+      await api.put(`/leaves/${id}/approve`);
       setMessage("Leave Approved ");
       fetchLeaves();
     } catch (error) {
@@ -30,7 +32,7 @@ const LeaveApproval = () => {
 
   const rejectLeave = async (id) => {
     try {
-      await api.put(`/api/leaves/${id}/reject`);
+      await api.put(`/leaves/${id}/reject`);
       setMessage("Leave Rejected ");
       fetchLeaves();
     } catch (error) {
@@ -49,6 +51,7 @@ const LeaveApproval = () => {
           {message}
         </div>
       )}
+      {console.log(leaves)}
 
       <table className="w-full border-collapse">
         <thead>
@@ -87,6 +90,9 @@ const LeaveApproval = () => {
                       Reject
                     </button>
                   </>
+                )}
+                {leave.leaveStatus === "APPROVED" && (
+                  <h2>Completed</h2>
                 )}
               </td>
             </tr>
