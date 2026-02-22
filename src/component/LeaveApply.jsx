@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import api from "../api/api";
 import styles from "./LeaveApply.module.css";
 
@@ -78,10 +78,11 @@ const LeaveApply = () => {
             value={leave.leaveType}
             onChange={handleChange}
           >
-            <option value="CASUAL">CASUAL</option>
-            <option value="SICK">SICK</option>
-            <option value="PAID">PAID</option>
-            <option value="UNPAID">UNPAID</option>
+            <option value="CASUAL">SICK</option>
+            <option value="SICK">VACATION</option>
+            <option value="PAID">PERSONAL</option>
+            <option value="UNPAID">EMERGENCY</option>
+            <option value="UNPAID">MATERNITY</option>
           </select>
         </div>
 

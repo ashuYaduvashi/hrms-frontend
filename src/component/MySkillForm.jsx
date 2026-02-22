@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/api";
-import styles from "./MyskillForm.module.css";
+import styles from "./MySkillForm.module.css";
 
 const MySkillForm = () => {
 
@@ -15,13 +15,23 @@ const MySkillForm = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // Experience validation
+    if (name === "experienceInMonths") {
+      if (value < 0) return;        
+      if (value > 600) return;      
+    }
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
   };
 
+  
   useEffect(() => {
     const fetchTechnologies = async () => {
       try {
@@ -35,8 +45,17 @@ const MySkillForm = () => {
     fetchTechnologies();
   }, []);
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const experienceMonths = Number(formData.experienceInMonths);
+
+    if (experienceMonths <= 0) {
+      setError("Experience must be greater than 0");
+      setMessage("");
+      return;
+    }
 
     try {
       await api.post("/employee/empTechnology", formData);
@@ -57,6 +76,11 @@ const MySkillForm = () => {
     }
   };
 
+  
+  const experienceMonths = Number(formData.experienceInMonths);
+  // const experienceYears = Math.floor(experienceMonths / 12);
+  const experienceYears = (experienceMonths / 12).toFixed(2);
+
   return (
     <div className={styles.formContainer}>
       <h2 className={styles.heading}>Add Skill</h2>
@@ -66,6 +90,7 @@ const MySkillForm = () => {
 
       <form onSubmit={handleSubmit} className={styles.form}>
 
+       
         <div className={styles.formGroup}>
           <label>Technology *</label>
           <select
@@ -83,6 +108,7 @@ const MySkillForm = () => {
           </select>
         </div>
 
+       
         <div className={styles.formGroup}>
           <label>Experience (Months) *</label>
           <input
@@ -90,10 +116,26 @@ const MySkillForm = () => {
             name="experienceInMonths"
             value={formData.experienceInMonths}
             onChange={handleChange}
+            min="0"
+            max="600"
             required
           />
+
+        
+          {experienceMonths > 0 && experienceMonths < 24 && (
+            <p className={styles.info}>
+              Experience: {experienceMonths} month{experienceMonths !== 1 && "s"}
+            </p>
+          )}
+
+          {experienceMonths >= 24 && (
+            <p className={styles.highlight}>
+              Experience in years: {experienceYears} year{experienceYears !== 1 && "s"}
+            </p>
+          )}
         </div>
 
+      
         <div className={styles.formGroup}>
           <label>Proficiency *</label>
           <select
@@ -110,6 +152,7 @@ const MySkillForm = () => {
           </select>
         </div>
 
+      
         <div className={styles.formGroup}>
           <label>Usage Description</label>
           <textarea

@@ -19,7 +19,9 @@ const EmployeeService = {
   // Get logged in employee profile
   getMyProfile: () => {
     return api.get(`/employee/profile`);
-  }
+  },
+
+  getDesignations: () => api.get(`/designations`)
 
 };
 

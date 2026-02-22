@@ -111,12 +111,12 @@ const EmployeeList = () => {
                       </span>
                     </td>
                     <td className="p-4 text-center">
-                      <button
-                        onClick={() => navigate(`/admin/empById/${emp.id}`)}
-                        className="px-4 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                      >
-                        View
-                      </button>
+                     <button
+  onClick={() => navigate(`/dashboard/viewAndUpdate/${emp.id}`)}
+  className="px-4 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+>
+  View
+</button>
                     </td>
                   </tr>
                 ))

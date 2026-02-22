@@ -1,31 +1,6 @@
-import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
 import "./Dashboard.css";
-
-
-const formatNameFromEmail = (email) => {
-  if (!email) return "User";
-
- 
-  const raw = email.split("@")[0];
-
-  const noDigits = raw.replace(/[0-9]/g, "");
-
- 
-  const withSpaces = noDigits.replace(/[_\-.]/g, " ");
-
-
-  const formatted = withSpaces
-    .split(" ")
-    .filter(word => word.trim() !== "")
-    .map(word =>
-      word.charAt(0).toUpperCase() +
-      word.slice(1).toLowerCase()
-    )
-    .join(" ");
-
-  return formatted || "User";
-};
 
 
 const Dashboard = () => {
@@ -45,8 +20,8 @@ console.log("decoded user data:", decoded);
 
 const name =
   decoded?.name ||
-  decoded?.username ||
-  formatNameFromEmail(decoded?.sub);
+  decoded?.employeeName ||
+  User;
 
 const role = decoded?.role || "Employee";
 

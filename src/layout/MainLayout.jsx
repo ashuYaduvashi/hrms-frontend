@@ -209,8 +209,8 @@ export const SIDEBAR_LINKS = [
   },
    {
     id: 10,
-    label: "Add Degisnation",
-    path: "/dashboard/addDegisnationAdmin",
+    label: "Add Designation",
+    path: "/dashboard/addDesignationAdmin",
     roles: ["ROLE_ADMIN"]
   },
 ];

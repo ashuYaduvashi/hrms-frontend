@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import styles from "./EmployeeForm.module.css";
 import EmployeeService from "../service/EmployeeService";
+import styles from "./EmployeeForm.module.css";
 
 const emptyAddress = {
   addressLine1: "",
@@ -208,6 +208,7 @@ const EmployeeForm = () => {
                   label={field}
                   name={field}
                   required={field !== "addressLine2"}
+                  maxLength={field === "pincode" ? 6 : undefined} 
                   value={employee.currentAddress[field]}   
                   onChange={(e) => handleAddressChange(e, "currentAddress")}  
                   error={errors.currentAddress?.[field]}
@@ -237,6 +238,7 @@ const EmployeeForm = () => {
                   label={field}
                   name={field}
                   required={field !== "addressLine2"}
+                  maxLength={field === "pincode" ? 6 : undefined} 
                   value={employee.permanentAddress[field]}
                   onChange={(e) => handleAddressChange(e, "permanentAddress")}
                   disabled={employee.sameAsCurrent}
