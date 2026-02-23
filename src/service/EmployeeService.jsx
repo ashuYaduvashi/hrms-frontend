@@ -3,7 +3,7 @@ import api from "../api/api"; // your axios instance
 const EmployeeService = {
   // Admin update any employee
   updateEmployeeByAdmin: (id, data) => {
-    return api.put(`/admin/employees/${id}`, data);
+    return api.put(`/admin/updateEmp/${id}`, data);
   },
 
   // Employee update own profile (ID not needed because backend takes from token)
@@ -13,7 +13,7 @@ const EmployeeService = {
 
   // Get employee by id (admin)
   getEmployeeById: (id) => {
-    return api.get(`/admin/employees/${id}`);
+    return api.get(`/admin/empById/${id}`);
   },
 
   // Get logged in employee profile

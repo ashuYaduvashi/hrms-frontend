@@ -18,6 +18,8 @@ const emptyAddress = {
 const EMP_STATUSES = ["ACTIVE", "INACTIVE", "ON_LEAVE", "RESIGNED"];
 
 const ViewAndUpdate = ({ employeeId }) => {
+  const { id } = useParams();
+
   const [employee, setEmployee] = useState({
     name: "",
     email: "",
@@ -37,48 +39,19 @@ const ViewAndUpdate = ({ employeeId }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // =============================================
-  // Load employee data + designations on mount
-  // =============================================
-    const { id } = useParams(); // ← add this
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        const [empRes, desigRes] = await Promise.all([
-          EmployeeService.getEmployeeById(id),  // ← use id here
-          EmployeeService.getDesignations()
-        ]);
-        // ... rest unchanged
-      } catch (err) {
-        console.error("Failed to load data:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (id) loadData(); // ← guard with id
-  }, [id]);  
-
-
-
-
-
-
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true);
 
-        // Load employee by ID (admin endpoint) and designations in parallel
         const [empRes, desigRes] = await Promise.all([
-          EmployeeService.getEmployeeById(employeeId),
+          EmployeeService.getEmployeeById(id),
           EmployeeService.getDesignations()
         ]);
 
         const data = empRes.data;
+
         setDesignations(desigRes.data);
 
         setEmployee({
@@ -113,6 +86,7 @@ const ViewAndUpdate = ({ employeeId }) => {
               }
             : { ...emptyAddress }
         });
+
       } catch (err) {
         console.error("Failed to load data:", err);
       } finally {
@@ -120,12 +94,11 @@ const ViewAndUpdate = ({ employeeId }) => {
       }
     };
 
-    if (employeeId) loadData();
-  }, [employeeId]);
+    if (id) loadData();
+  }, [id]);
 
-  // =============================================
-  // Handlers
-  // =============================================
+  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEmployee(prev => ({ ...prev, [name]: value }));
@@ -138,7 +111,7 @@ const ViewAndUpdate = ({ employeeId }) => {
         ...prev,
         [type]: { ...prev[type], [name]: value }
       };
-      // Mirror to permanent if same-as-current is ON
+    
       if (type === "currentAddress" && prev.sameAsPermanent) {
         updated.permanentAddress = { ...updated.currentAddress };
       }
@@ -155,16 +128,14 @@ const ViewAndUpdate = ({ employeeId }) => {
     }));
   };
 
-  // =============================================
-  // Validation
-  // =============================================
+
   const validate = () => {
     const newErrors = {};
     const onlyTextRegex = /^[A-Za-z .-]+$/;
     const phoneRegex = /^[6-9][0-9]{9}$/;
     const pincodeRegex = /^[1-9][0-9]{5}$/;
 
-    // Admin controls — always validated
+    
     if (!employee.designationId)
       newErrors.designationId = "Designation is required";
 
@@ -174,7 +145,6 @@ const ViewAndUpdate = ({ employeeId }) => {
     if (!employee.status)
       newErrors.status = "Status is required";
 
-    // Full edit fields — only validate when editing
     if (isFullEditEnabled) {
       if (!employee.name) newErrors.name = "Name is required";
       else if (!onlyTextRegex.test(employee.name))
@@ -207,25 +177,28 @@ const ViewAndUpdate = ({ employeeId }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // =============================================
-  // Submit
-  // =============================================
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
 
-    try {
-      await EmployeeService.updateEmployeeByAdmin(employeeId, {
-        ...employee,
-        designationId: Number(employee.designationId)
-      });
-      setIsSuccess(true);
-      setIsFullEditEnabled(false);
-      setTimeout(() => setIsSuccess(false), 3000);
-    } catch (err) {
-      console.error("Update failed:", err);
-    }
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!validate()) return;
+
+  try {
+    const payload = {
+      ...employee,
+      designationId: Number(employee.designationId)
+    };
+
+    await EmployeeService.updateEmployeeByAdmin(id, payload);
+
+    setIsSuccess(true);
+    setIsFullEditEnabled(false);
+    setTimeout(() => setIsSuccess(false), 3000);
+
+  } catch (err) {
+    console.error("Update failed:", err);
+  }
+};
 
   if (isLoading) return <p style={{ padding: 24 }}>Loading employee data...</p>;
 
@@ -235,15 +208,12 @@ const ViewAndUpdate = ({ employeeId }) => {
         <h2 className={styles.title}>Employee Details — Admin View</h2>
 
         {isSuccess && (
-          <p className={styles.success}>✅ Employee updated successfully</p>
+          <p className={styles.success}> Employee updated successfully</p>
         )}
 
         <form onSubmit={handleSubmit}>
 
-          {/* ===================== */}
-          {/* ADMIN CONTROLS        */}
-          {/* Always editable       */}
-          {/* ===================== */}
+          
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>
               Admin Controls
@@ -251,7 +221,7 @@ const ViewAndUpdate = ({ employeeId }) => {
             </h3>
             <div className={styles.grid}>
 
-              {/* Designation — dropdown from API */}
+              
               <div className={styles.inputGroup}>
                 <label>Designation</label>
                 <select
@@ -261,7 +231,7 @@ const ViewAndUpdate = ({ employeeId }) => {
                 >
                   <option value="">-- Select Designation --</option>
                   {designations.map(d => (
-                    <option key={d.id} value={d.id}>{d.name}</option>
+                    <option key={d.id} value={d.id}>{d.title}</option>
                   ))}
                 </select>
                 {errors.designationId && (
@@ -269,7 +239,7 @@ const ViewAndUpdate = ({ employeeId }) => {
                 )}
               </div>
 
-              {/* Hire Date */}
+           
               <div className={styles.inputGroup}>
                 <label>Hire Date</label>
                 <input
@@ -283,7 +253,7 @@ const ViewAndUpdate = ({ employeeId }) => {
                 )}
               </div>
 
-              {/* Employee Status — dropdown */}
+            
               <div className={styles.inputGroup}>
                 <label>Employee Status</label>
                 <select
@@ -304,10 +274,7 @@ const ViewAndUpdate = ({ employeeId }) => {
             </div>
           </div>
 
-          {/* ================================ */}
-          {/* EMPLOYEE DETAILS                 */}
-          {/* Read-only unless full edit ON    */}
-          {/* ================================ */}
+        
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
               <h3 className={styles.sectionTitle}>Employee Details</h3>
@@ -336,7 +303,7 @@ const ViewAndUpdate = ({ employeeId }) => {
                 label="Email"
                 name="email"
                 value={employee.email}
-                disabled={true} // email never editable
+                disabled={true} 
               />
               <Field
                 label="Phone Number"
@@ -356,9 +323,7 @@ const ViewAndUpdate = ({ employeeId }) => {
             </div>
           </div>
 
-          {/* ===================== */}
-          {/* CURRENT ADDRESS       */}
-          {/* ===================== */}
+         
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>Current Address</h3>
             <AddressFields
@@ -370,9 +335,7 @@ const ViewAndUpdate = ({ employeeId }) => {
             />
           </div>
 
-          {/* ===================== */}
-          {/* PERMANENT ADDRESS     */}
-          {/* ===================== */}
+       
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
               <h3 className={styles.sectionTitle}>Permanent Address</h3>
@@ -396,9 +359,7 @@ const ViewAndUpdate = ({ employeeId }) => {
             />
           </div>
 
-          {/* ===================== */}
-          {/* SUBMIT BUTTON         */}
-          {/* ===================== */}
+         
           <div className={styles.buttonWrapper}>
             <button type="submit" className={styles.saveBtn}>
               💾 Save Changes
@@ -411,9 +372,7 @@ const ViewAndUpdate = ({ employeeId }) => {
   );
 };
 
-// =============================================
-// Reusable Field
-// =============================================
+
 const Field = ({ label, error, ...props }) => (
   <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
     <label style={{ fontWeight: 600, fontSize: 13, color: "#555" }}>{label}</label>
@@ -432,9 +391,7 @@ const Field = ({ label, error, ...props }) => (
   </div>
 );
 
-// =============================================
-// Address Fields Block
-// =============================================
+
 const AddressFields = ({ data, onChange, disabled, errors }) => (
   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
     {[
