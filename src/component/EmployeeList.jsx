@@ -115,7 +115,7 @@ const EmployeeList = () => {
   onClick={() => navigate(`/dashboard/viewAndUpdate/${emp.id}`)}
   className="px-4 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
 >
-  View
+  View And Edit
 </button>
                     </td>
                   </tr>
