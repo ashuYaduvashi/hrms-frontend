@@ -51,7 +51,7 @@ const LeaveApply = () => {
       setMessage("Leave Request Submitted Successfully");
 
       setLeave({
-        leaveType: "CASUAL",
+        leaveType: "",
         startDate: "",
         endDate: "",
         daysRequested: 0,
@@ -78,11 +78,11 @@ const LeaveApply = () => {
             value={leave.leaveType}
             onChange={handleChange}
           >
-            <option value="CASUAL">SICK</option>
-            <option value="SICK">VACATION</option>
-            <option value="PAID">PERSONAL</option>
-            <option value="UNPAID">EMERGENCY</option>
-            <option value="UNPAID">MATERNITY</option>
+            <option value="SICK">SICK</option>
+            <option value="VACATION">VACATION</option>
+            <option value="PERSONAL">PERSONAL</option>
+            <option value="EMERGENCY">EMERGENCY</option>
+            <option value="MATERNITY">MATERNITY</option>
           </select>
         </div>
 
