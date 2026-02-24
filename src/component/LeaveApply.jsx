@@ -5,7 +5,7 @@ import styles from "./LeaveApply.module.css";
 const LeaveApply = () => {
 
   const [leave, setLeave] = useState({
-    leaveType: "CASUAL",
+    leaveType: "",
     startDate: "",
     endDate: "",
     daysRequested: 0,

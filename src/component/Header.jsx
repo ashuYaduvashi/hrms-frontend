@@ -46,7 +46,7 @@ const Header = ({ source, title, date, time }) => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-    navigate("/login");
+    navigate("/login", { replace: true });
   };
 
   return (

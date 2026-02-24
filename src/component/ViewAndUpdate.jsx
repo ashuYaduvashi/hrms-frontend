@@ -15,9 +15,9 @@ const emptyAddress = {
   pincode: ""
 };
 
-const EMP_STATUSES = ["ACTIVE", "INACTIVE", "ON_LEAVE", "RESIGNED"];
+const EMP_STATUSES = ["ACTIVE", "INACTIVE", "ON_LEAVE", "RESIGNED","TERMINATED"];
 
-const ViewAndUpdate = ({ employeeId }) => {
+const ViewAndUpdate = () => {
   const { id } = useParams();
 
   const [employee, setEmployee] = useState({

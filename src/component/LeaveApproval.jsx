@@ -94,6 +94,9 @@ const LeaveApproval = () => {
                 {leave.leaveStatus === "APPROVED" && (
                   <h2>Completed</h2>
                 )}
+                {leave.leaveStatus === "REJECTED" && (
+                  <h2>Completed</h2>
+                )}
               </td>
             </tr>
           ))}
